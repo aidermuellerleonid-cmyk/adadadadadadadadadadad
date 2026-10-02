@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Ziele-Kalender</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f3f5fb;--card:#fff;--tx:#1b2236;--mut:#5d6785;--g:#2ecc71;--y:#f5c542;--r:#e5484d;--ac:#4f6fe8;--c2:#eef1f9;--c3:#e8ecf7;--c4:#dde3f3;--c5:#cfd6ea;--c6:#a9b6dc;--c7:#dde3f3;--gb:#d3f5e1;--yb:#fdf0c4;--rb:#fcdadb;--gt:#17803f;--yt:#8a6a00;--rt:#b3262b}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1420;--card:#192034;--tx:#e8ecf5;--mut:#8a95b0;--ac:#6c8cff;--c2:var(--c2);--c3:var(--c3);--c4:var(--c4);--c5:var(--c5);--c6:var(--c6);--c7:var(--c7);--gb:var(--gb);--yb:var(--yb);--rb:var(--rb);--gt:var(--gt);--yt:var(--yt);--rt:var(--rt)}}
+:root[data-theme="dark"]{--bg:#0f1420;--card:#192034;--tx:#e8ecf5;--mut:#8a95b0;--ac:#6c8cff;--c2:var(--c2);--c3:var(--c3);--c4:var(--c4);--c5:var(--c5);--c6:var(--c6);--c7:var(--c7);--gb:var(--gb);--yb:var(--yb);--rb:var(--rb);--gt:var(--gt);--yt:var(--yt);--rt:var(--rt)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--tx)}
+.wrap{display:grid;grid-template-columns:1fr 380px;gap:18px;padding:18px;max-width:1300px;margin:auto}
+.card{background:var(--card);border-radius:16px;padding:18px}
+h2{margin:0 0 10px;font-size:18px}.mut{color:var(--mut);font-size:13px}
+.head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.head b{font-size:22px}button{font:inherit;cursor:pointer;border:0;color:var(--tx)}
+.nav{background:var(--c3);border-radius:10px;padding:8px 14px}.nav:hover{background:var(--c4)}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.dow{text-align:center;color:var(--mut);font-size:12px;padding:4px}
+.day{background:var(--c2);border-radius:10px;min-height:74px;padding:6px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;border:2px solid transparent}
+.day:hover{border-color:var(--c6)}.day.sel{border-color:var(--ac)}.day.today .n{background:var(--ac);border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center}
+.day.empty{background:none;pointer-events:none}.n{font-size:13px;font-weight:600}
+.dots{display:flex;gap:4px}.dot{width:12px;height:12px;border-radius:50%;background:var(--c5)}
+.G{background:var(--g)}.Y{background:var(--y)}.R{background:var(--r)}
+.q{margin:14px 0}.q p{margin:0 0 6px;font-weight:600}.opts{display:grid;gap:6px}
+.opt{font-size:15px;background:var(--c3);border-radius:10px;padding:13px 12px;text-align:left;display:flex;gap:10px;align-items:center;border:2px solid transparent}
+.opt:hover{background:var(--c4)}.opt.on.G{background:var(--gb);border-color:var(--g)}.opt.on.Y{background:var(--yb);border-color:var(--y)}.opt.on.R{background:var(--rb);border-color:var(--r)}
+.opt i{width:12px;height:12px;border-radius:50%;flex:none}
+.sum{display:flex;gap:10px;margin:10px 0}.sum div{flex:1;text-align:center;border-radius:12px;padding:10px;font-size:26px;font-weight:700}
+.sum small{display:block;font-size:12px;font-weight:400;opacity:.9}
+.sum .G{background:var(--gb);color:var(--gt)}.sum .Y{background:var(--yb);color:var(--yt)}.sum .R{background:var(--rb);color:var(--rt)}
+.bar{height:12px;border-radius:6px;background:var(--c7);overflow:hidden;display:flex;margin:8px 0}
+.row{display:flex;justify-content:space-between;font-size:14px;margin:6px 0}
+.clear{margin-top:8px;background:none;color:var(--mut);text-decoration:underline;font-size:13px}
+  .opt:disabled{cursor:default;opacity:.5}.opt.on:disabled{opacity:1}.note{color:var(--mut);font-size:13px;margin:6px 0}
+@media(max-width:900px){.wrap{display:flex;flex-direction:column;padding:12px}.wrap>div{display:contents}#dayc{order:0}.wrap>.card{order:1}#monc{order:2}}
+@media(max-width:600px){.day{min-height:56px;padding:4px}.dot{width:8px;height:8px}.dots{gap:2px}.grid{gap:4px}.card{padding:14px}}
+</style></head><body>
+<div class="wrap">
+ <div class="card"><div class="head"><button class="nav" id="prev">◀</button><b id="title"></b><button class="nav" id="next">▶</button></div>
+  <div class="grid" id="grid"></div>
+  <p class="mut">Klicke einen Tag an und beantworte die fünf Fragen. Alles wird automatisch gespeichert.</p></div>
+ <div>
+  <div class="card" id="dayc"></div>
+  <div class="card" style="margin-top:18px" id="monc"></div>
+ </div>
+</div>
+<script>
+const AREAS=[
+{k:'sleep',n:'Schlaf',q:'Wie viele Stunden hast du geschlafen?',o:[['G','8 Stunden oder mehr'],['Y','4 bis unter 8 Stunden'],['R','Weniger als 4 Stunden']]},
+{k:'kcal',n:'Kalorienziel',q:'Wie nah warst du heute an deinem Kalorien-Defizitziel?',o:[['G','Ziel erreicht (weniger als 100 kcal daneben)'],['Y','Weniger als 500 kcal daneben'],['R','Gar kein Defizit erreicht']]},
+{k:'goon',n:'Goonen',q:'Hast du heute auf Goonen verzichtet?',o:[['G','Ja'],['Y','Teilweise / weniger als vorgenommen'],['R','Nein']]},
+{k:'learn',n:'Lernen',q:'Wie lange hast du heute gelernt?',o:[['G','Mindestens 60 Minuten'],['Y','1 bis 59 Minuten'],['R','Gar nicht']]},
+{k:'sport',n:'Sport',q:'Wie viel Sport hast du heute gemacht?',o:[['G','Mindestens 30 Minuten'],['Y','1 bis 29 Minuten'],['R','Gar keinen']]}];
+const MN=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+let data={};try{data=JSON.parse(localStorage.getItem('ziele')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('ziele',JSON.stringify(data))}catch(e){}};
+const key=(y,m,d)=>`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+let now=new Date();const todayK=()=>{const d=new Date();return key(d.getFullYear(),d.getMonth(),d.getDate())};let lastDay=todayK();let Y=now.getFullYear(),M=now.getMonth(),sel=key(Y,M,now.getDate());
+const $=id=>document.getElementById(id);
+const count=e=>{const c={G:0,Y:0,R:0};if(e)Object.values(e).forEach(v=>c[v]++);return c};
+const bal=e=>{const c=count(e);let n=0;while(c.R>0&&c.G>0){c.R--;c.G--;n++}while(c.R>0&&c.Y>=2){c.R--;c.Y-=2;n++}c.n=n;return c};
+function render(){
+ now=new Date();
+ $('title').textContent=MN[M]+' '+Y;
+ let h=['Mo','Di','Mi','Do','Fr','Sa','So'].map(d=>`<div class="dow">${d}</div>`).join('');
+ const off=(new Date(Y,M,1).getDay()+6)%7,dim=new Date(Y,M+1,0).getDate();
+ for(let i=0;i<off;i++)h+='<div class="day empty"></div>';
+ for(let d=1;d<=dim;d++){const k=key(Y,M,d),e=data[k]||{};
+  h+=`<button class="day${k==sel?' sel':''}${d==now.getDate()&&M==now.getMonth()&&Y==now.getFullYear()?' today':''}" data-k="${k}"><span class="n">${d}</span><span class="dots">${AREAS.map(a=>`<span class="dot ${e[a.k]||''}" title="${a.n}"></span>`).join('')}</span></button>`}
+ $('grid').innerHTML=h;
+ $('grid').querySelectorAll('.day[data-k]').forEach(b=>b.onclick=()=>{sel=b.dataset.k;render();window.scrollTo({top:0,behavior:'smooth'})});
+ const [sy,sm,sd]=sel.split('-').map(Number),e=data[sel]||{},c=bal(e),locked=sel!==todayK();
+ $('dayc').innerHTML=`<h2>${sd}. ${MN[sm-1]} ${sy}</h2>
+ <div class="sum"><div class="G">${c.G}<small>grün</small></div><div class="Y">${c.Y}<small>gelb</small></div><div class="R">${c.R}<small>rot</small></div></div>`+(c.n?`<p class="note">⚖️ ${c.n} roter Bereich${c.n>1?'e':''} ausgeglichen (1 Rot = 1 Grün oder 2 Gelb)</p>`:'')+(locked?`<p class="note">🔒 Nur der heutige Tag kann bearbeitet werden.</p>`:'')+
+ AREAS.map(a=>`<div class="q"><p>${a.n}: ${a.q}</p><div class="opts">${a.o.map(([f,t])=>`<button class="opt ${f}${e[a.k]==f?' on':''}" data-a="${a.k}" data-f="${f}"${locked?' disabled':''}><i class="${f}"></i>${t}</button>`).join('')}</div></div>`).join('')+
+ (locked?'':`<button class="clear" id="clr">Tag zurücksetzen</button>`);
+ $('dayc').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const d=data[sel]=data[sel]||{};
+  if(d[b.dataset.a]==b.dataset.f)delete d[b.dataset.a];else d[b.dataset.a]=b.dataset.f;save();render()});
+ if($('clr'))$('clr').onclick=()=>{delete data[sel];save();render()};
+ // Monat
+ const t={G:0,Y:0,R:0},per={};AREAS.forEach(a=>per[a.k]={G:0,n:0});let days=0,perfect=0;
+ for(let d=1;d<=dim;d++){const x=data[key(Y,M,d)];if(!x||!Object.keys(x).length)continue;days++;
+  const cc=count(x),bb=bal(x);t.G+=bb.G;t.Y+=bb.Y;t.R+=bb.R;if(cc.G==5)perfect++;
+  AREAS.forEach(a=>{if(x[a.k]){per[a.k].n++;if(x[a.k]=='G')per[a.k].G++}})}
+ const tot=t.G+t.Y+t.R,pct=tot?Math.round((t.G+t.Y*.5)/tot*100):0;
+ let streak=0;{let dt=new Date(now.getFullYear(),now.getMonth(),now.getDate()),first=true;
+  for(;;){const x=data[key(dt.getFullYear(),dt.getMonth(),dt.getDate())];
+   if(x&&Object.keys(x).length==5&&bal(x).R==0){streak++}else if(!first)break;
+   first=false;dt.setDate(dt.getDate()-1)}}
+ const msg=!tot?'Noch keine Einträge – starte heute! 💪':pct>=80?'Starker Monat – weiter so! 🔥':pct>=50?'Solide, da geht noch mehr! 👍':'Jeder Tag ist ein neuer Anfang. 🌱';
+ $('monc').innerHTML=`<h2>Monatsüberblick</h2><div class="mut">${days} Tage erfasst · ${perfect} perfekte Tage · Serie: ${streak} 🔥</div>
+ <div class="row"><b style="font-size:28px">${pct}%</b><span class="mut">Zielerreichung</span></div>
+ <div class="bar"><div class="G" style="width:${tot?t.G/tot*100:0}%"></div><div class="Y" style="width:${tot?t.Y/tot*100:0}%"></div><div class="R" style="width:${tot?t.R/tot*100:0}%"></div></div>
+ <div class="row"><span>🟢 ${t.G}</span><span>🟡 ${t.Y}</span><span>🔴 ${t.R}</span></div>
+ <hr style="border:0;border-top:1px solid var(--c7)">`+
+ AREAS.map(a=>`<div class="row"><span>${a.n}</span><span class="mut">${per[a.k].G} von ${per[a.k].n} Tagen grün</span></div>`).join('')+`<p>${msg}</p>`;
+}
+$('prev').onclick=()=>{M--;if(M<0){M=11;Y--}render()};
+$('next').onclick=()=>{M++;if(M>11){M=0;Y++}render()};
+render();
+setInterval(()=>{if(todayK()!==lastDay){lastDay=todayK();const d=new Date();Y=d.getFullYear();M=d.getMonth();sel=lastDay;render()}},30000);
+</script></body></html>
